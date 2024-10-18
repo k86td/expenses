@@ -8,32 +8,18 @@ somewhere than accepts something, whatever.
 
 ## Brainstorming
 
-This is the area where I ramble what the project
-will be like and what it should be able to do.
-
 The main concern is the export. Since the output
 format could be variable, they are multiple paths
-to take. The first one is to have `Exporters` in
-the code that can export the data. This can be
-great if you know exactly where to access
-everything and the export path will always be the
-same. But this breaks appart when you have two
-different companies since they won't handle
-expenses the same way. The second way could be to
-have generic exporters which can be configured a
-little bit like a pipeline. This could be nice but
-involves complex configuration. The last thing
-would be to use a scripting language alongside go
-to write scripts for exporting the data. Data
-could be injected in the script and the script
-would handle the export itself. This allows the
-user to manage everything as it sees fit.
+to take. The best bet would be using Lua as the
+scripting language and execute a script for the
+export. The first thing to test will be the usage
+of Golang to run Lua scripts with modules. See the
+`lua-testing` folder.
 
-The best bet would be using Lua as the scripting
-language and execute a script for the export. The
-first thing to test will be the usage of Golang to
-run Lua scripts with modules. See the `lua-testing`
-folder.
+Feedback from the script could be accounted in the
+cli. Meaning if we try to export but the script
+fails, we could have an error message and an exit
+code.
 
 ### Inputs
 
@@ -43,13 +29,52 @@ tool?
 This will be a cli app written in golang. The
 features include:
 
-- can input expenses to be tracked
+- can input expenses to be tracked (cobra)
     * can specify date (by default current date)
     * can specify type of expense
     * can specify a description
-- can list the expenses
+- can list the expenses in a table view (go-pretty)
     * can filter by type
     * can filter by date or date range
-- can export the expenses
-    * using lua script?
+- can export the expenses (gopher-lua)
+    * using lua script
+
+#### Export Script
+
+The export script is a lua script that will be
+executed and handled the responsability of
+exporting that data. This decouples the specific
+need for an export path from the cli tool.
+
+#### Storage Backend
+
+The expenses need to be stored somewhere. The
+easiest would be a csv file somewhere, but that
+can be troublesome if you want to keep a large
+history of previous expenses. A better and more
+future proof solution could be using a sqlite
+database. I'm seeing `ncruces/go-sqlite3` as a
+good option. 
+
+### Commands
+
+This is brainstorming of the commands available
+and the general syntax for them.
+
+```bash
+# adds a new expense with travel tag
+expenses add 23.54 desc:"going to Montreal" +travel
+# show table of expenses
+expenses
+expenses <50 +travel
+# export expenses using api.lua script
+expenses export api
+```
+
+### Configuration
+
+There should be a place where configuration could
+be defined in toml format. Configuration could be
+used in the cli and passed to the script to handle
+different cases.
 
