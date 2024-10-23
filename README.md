@@ -1,4 +1,14 @@
 
+Soooo, I've setup a minimal POC to see how this
+would go using Golang (to learn). BUT, startup
+time to load the actual sqlite & start performing
+queries is very slow (go 0.99 seconds vs Rust 0.00
+lol). I was comparing with taskwarrior since this
+is the inspiration for this project. I did a
+couple of tests for performance and man, I don't
+think I like go very much. So I'm going to rebuild
+this start of a project in Rust and stick to it.
+
 # General
 
 This repository is to help keeping track of
