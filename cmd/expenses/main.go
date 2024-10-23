@@ -3,11 +3,8 @@ package main
 import (
 	"fmt"
 	"os"
-	"time"
 
 	repository "k86td/expenses/internal/repository"
-
-	"github.com/google/uuid"
 )
 
 func main() {
@@ -19,14 +16,20 @@ func main() {
 
 	fmt.Printf("Opened DB: %v\n", repo)
 
-	now := time.Now()
-	err = repo.Create(repository.Expense{
-		Created:  now,
-		Modified: now,
-		Uuid:     uuid.New().String(),
-		Data:     "{'testing': true}",
-	})
+	// now := time.Now()
+	// err = repo.Create(repository.Expense{
+	// 	Created:  now,
+	// 	Modified: now,
+	// 	Uuid:     uuid.New().String(),
+	// 	Data:     "{'testing': true}",
+	// })
+	// if err != nil {
+	// 	fmt.Printf("Got error while inserting: %v", err)
+	// }
+
+	exps, err := repo.GetAll(1)
 	if err != nil {
-		fmt.Printf("Got error while inserting: %v", err)
+		fmt.Printf("Got error while fetching inside DB: %v\n", err)
 	}
+	fmt.Printf("expenses: %v", exps)
 }

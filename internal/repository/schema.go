@@ -15,3 +15,27 @@ const InsertExpense string = `
 INSERT INTO expenses (uuid, created, modified, data)
 VALUES (?, ?, ?, ?)
 `
+
+const UpdateExpense string = `
+UPDATE expenses
+SET
+  modified = ?
+  data    = ?
+WHERE
+  uuid = ?;
+`
+
+const DeleteExpense string = `
+DELETE FROM expenses
+WHERE
+  uuid = ?;
+`
+
+const GetAllExpenses string = `
+SELECT
+  uuid, created, modified, data
+FROM expenses
+ORDER BY
+  modified DESC
+LIMIT ?
+`
