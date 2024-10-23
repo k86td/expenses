@@ -2,7 +2,10 @@ module k86td/expenses
 
 go 1.22.6
 
-require github.com/ncruces/go-sqlite3 v0.19.0
+require (
+	github.com/google/uuid v1.6.0
+	github.com/ncruces/go-sqlite3 v0.19.0
+)
 
 require (
 	github.com/ncruces/julianday v1.0.0 // indirect

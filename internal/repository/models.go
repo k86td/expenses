@@ -5,8 +5,8 @@ import (
 )
 
 type Expense struct {
-	created  time.Time
-	modified time.Time
-	uuid     string
-	data     string
+	Created  time.Time
+	Modified time.Time
+	Uuid     string
+	Data     string
 }
