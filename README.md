@@ -9,6 +9,16 @@ couple of tests for performance and man, I don't
 think I like go very much. So I'm going to rebuild
 this start of a project in Rust and stick to it.
 
+# Performance tests
+
+Using the first sqlite module that I've found,
+performance was lacking a little bit. Hence why I
+started experimenting with other sqlite library. I
+found [this one](https://github.com/zombiezen/go-sqlite) which could be enough. The question
+is, do I want 'enough', or do I build this using
+Rust. This is a tool that I will be using. Meaning
+I want this to be running smoothly.
+
 # General
 
 This repository is to help keeping track of
