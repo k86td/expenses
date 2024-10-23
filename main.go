@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	repository "k86td/expenses/internal/data"
+	repository "k86td/expenses/internal/repository"
 )
 
 func main() {
@@ -18,5 +18,4 @@ func main() {
 
 	fmt.Printf("Opened DB: %v\n", repo)
 	repo.PrintVersion()
-	fmt.Printf("Initialized: %v\n", repo.IsInitialized())
 }

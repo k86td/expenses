@@ -1,4 +1,4 @@
-package models
+package repository
 
 import (
 	"time"
@@ -7,5 +7,6 @@ import (
 type Expense struct {
 	created  time.Time
 	modified time.Time
-	value    float64
+	uuid     string
+	data     string
 }
