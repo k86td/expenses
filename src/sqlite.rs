@@ -3,6 +3,15 @@ use uuid::Uuid;
 
 use crate::{models::Expense, repository::ExpensesRepository};
 
+const CREATE_TABLE_EXPENSES: &str = "
+CREATE TABLE expenses (
+  uuid      TEXT      PRIMARY KEY,
+  created   DATETIME  NOT NULL,
+  modified  DATETIME  NOT NULL,
+  data      TEXT
+);
+";
+
 const CREATE_EXPENSE: &str = "
 INSERT INTO expenses
     (uuid, created, modified, data)
@@ -49,12 +58,21 @@ impl SqliteRepository {
     /// Initialize the database at `db_path`. If it encounters an error during the creation an
     /// error will be returned.
     pub fn initialize(db_path: &str) -> Result<Self, Error> {
-        todo!()
+        let db = Connection::open_with_flags(
+            db_path,
+            OpenFlags::SQLITE_OPEN_CREATE
+                | OpenFlags::SQLITE_OPEN_READ_WRITE
+                | OpenFlags::SQLITE_OPEN_URI
+                | OpenFlags::SQLITE_OPEN_NO_MUTEX,
+        )?;
+        db.execute(CREATE_TABLE_EXPENSES, [])?;
+
+        Ok(SqliteRepository { db })
     }
 }
 
 impl ExpensesRepository<Error> for SqliteRepository {
-    fn create(&mut self, expense: Expense) -> Result<usize, Error> {
+    fn create(&self, expense: Expense) -> Result<usize, Error> {
         self.db.execute(
             CREATE_EXPENSE,
             (
@@ -66,18 +84,18 @@ impl ExpensesRepository<Error> for SqliteRepository {
         )
     }
 
-    fn update(&mut self, expense: Expense) -> Result<usize, Error> {
+    fn update(&self, expense: Expense) -> Result<usize, Error> {
         self.db.execute(
             UPDATE_EXPENSE,
             (expense.modified, expense.data, expense.uuid.to_string()),
         )
     }
 
-    fn delete(&mut self, uuid: Uuid) -> Result<usize, Error> {
+    fn delete(&self, uuid: Uuid) -> Result<usize, Error> {
         self.db.execute(DELETE_EXPENSE, [uuid.to_string()])
     }
 
-    fn get_all(&mut self, limit: u32) -> Result<Vec<Expense>, Error> {
+    fn get_all(&self, limit: u32) -> Result<Vec<Expense>, Error> {
         let mut stmt = self.db.prepare(GET_ALL_EXPENSES)?;
         let expense_iter = stmt.query_map([limit], |row| {
             Ok(Expense {

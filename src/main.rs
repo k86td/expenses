@@ -4,7 +4,7 @@ use serde_json::json;
 use uuid::Uuid;
 
 fn main() {
-    let mut repo = SqliteRepository::open("testing.db").unwrap();
+    let repo = SqliteRepository::initialize("testing.db").unwrap();
     let uuid: String = Uuid::new_v4().to_string();
     let now = chrono::Utc::now();
 
