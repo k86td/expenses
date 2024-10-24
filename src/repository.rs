@@ -12,5 +12,5 @@ pub trait ExpensesRepository<E> {
     fn delete(&mut self, uuid: uuid::Uuid) -> Result<usize, E>;
 
     /// Get all expenses using a limit on the number of rows.
-    fn get_all<'a>(&mut self, limit: u32) -> Result<&'a [Expense], E>;
+    fn get_all(&mut self, limit: u32) -> Result<Vec<Expense>, E>;
 }

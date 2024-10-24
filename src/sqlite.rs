@@ -28,6 +28,8 @@ WHERE
 const GET_ALL_EXPENSES: &str = "
 SELECT uuid, created, modified, data
 FROM expenses
+ORDER BY
+    modified DESC
 LIMIT ?;
 ";
 
@@ -56,7 +58,7 @@ impl ExpensesRepository<Error> for SqliteRepository {
         self.db.execute(
             CREATE_EXPENSE,
             (
-                expense.uuid.to_string(),
+                expense.uuid,
                 expense.created,
                 expense.modified,
                 expense.data,
@@ -75,7 +77,22 @@ impl ExpensesRepository<Error> for SqliteRepository {
         self.db.execute(DELETE_EXPENSE, [uuid.to_string()])
     }
 
-    fn get_all<'a>(&mut self, limit: u32) -> Result<&'a [Expense], Error> {
-        todo!()
+    fn get_all(&mut self, limit: u32) -> Result<Vec<Expense>, Error> {
+        let mut stmt = self.db.prepare(GET_ALL_EXPENSES)?;
+        let expense_iter = stmt.query_map([limit], |row| {
+            Ok(Expense {
+                uuid: row.get(0)?,
+                created: row.get(1)?,
+                modified: row.get(2)?,
+                data: row.get(3)?,
+            })
+        })?;
+
+        let mut res: Vec<Expense> = Vec::new();
+        for exp in expense_iter {
+            res.push(exp?);
+        }
+
+        Ok(res)
     }
 }
