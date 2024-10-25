@@ -9,14 +9,11 @@ use expenses::{
 
 fn main() -> Result<()> {
     let cli = Cli::parse();
-    let command = cli.match_command();
 
-    let repo = SqliteRepository::initialize(":memory:")?;
+    let repo = SqliteRepository::open("testing.db").unwrap();
     let ctx = CliContext { repo: &repo };
 
-    command.process(ctx)?;
-
-    dbg!(repo.get_all(5)?);
+    cli.run(ctx)?;
 
     Ok(())
 }

@@ -1,5 +1,6 @@
 use clap::{Args, Parser, Subcommand};
 use serde_json::json;
+use tabled::Table;
 
 use crate::{models::CliContext, repository::ExpensesRepository, Error};
 
@@ -13,12 +14,24 @@ pub struct Cli {
 pub enum Commands {
     /// Add a new expense
     Add(AddExpense),
+    // Show a table of all expenses
+    Show(ShowExpenseTable),
 }
 
 impl Cli {
-    pub fn match_command(self) -> impl ProcessCommand {
+    pub fn run<R>(self, ctx: CliContext<R>) -> crate::Result<()>
+    where
+        R: ExpensesRepository,
+    {
         match self.command {
-            Commands::Add(v) => v,
+            Commands::Add(v) => {
+                v.process(ctx)?;
+                Ok(())
+            }
+            Commands::Show(s) => {
+                s.process(ctx)?;
+                Ok(())
+            }
         }
     }
 }
@@ -49,6 +62,23 @@ impl ProcessCommand for AddExpense {
             modified: now,
             data: json!({"value": self.value}),
         })?;
+
+        Ok(())
+    }
+}
+
+#[derive(Args, Debug)]
+pub struct ShowExpenseTable {}
+
+impl ProcessCommand for ShowExpenseTable {
+    fn process<R>(&self, ctx: CliContext<R>) -> Result<(), Error>
+    where
+        R: ExpensesRepository,
+    {
+        let expenses = ctx.repo.get_all(10)?;
+
+        let table = Table::new(expenses);
+        println!("{table}");
 
         Ok(())
     }

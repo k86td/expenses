@@ -1,9 +1,10 @@
 use chrono::{DateTime, Utc};
 use serde_json::Value;
+use tabled::Tabled;
 
 use crate::repository::ExpensesRepository;
 
-#[derive(Debug)]
+#[derive(Debug, Tabled)]
 pub struct Expense {
     pub uuid: String,
     pub created: DateTime<Utc>,
