@@ -1,7 +1,10 @@
 
 set export := true
 
-IGNORE_PATTERN := "/.cargo/registry|main.rs|rustc/"
+IGNORE_PATTERN := "/.cargo/registry|rustc/"
+
+test:
+  cargo test
 
 # see https://doc.rust-lang.org/rustc/instrument-coverage.html
 generate-coverage:

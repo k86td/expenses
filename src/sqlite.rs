@@ -3,7 +3,7 @@ use rusqlite::{Connection, Error, OpenFlags};
 use crate::{models::Expense, repository::ExpensesRepository};
 
 const CREATE_TABLE_EXPENSES: &str = "
-CREATE TABLE expenses (
+CREATE TABLE IF NOT EXISTS expenses (
   uuid      TEXT      PRIMARY KEY,
   created   DATETIME  NOT NULL,
   modified  DATETIME  NOT NULL,
