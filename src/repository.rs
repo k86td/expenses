@@ -9,7 +9,7 @@ pub trait ExpensesRepository<E> {
     fn update(&self, expense: Expense) -> Result<usize, E>;
 
     /// Delete an expense using its uuid.
-    fn delete(&self, uuid: uuid::Uuid) -> Result<usize, E>;
+    fn delete(&self, uuid: &str) -> Result<usize, E>;
 
     /// Get all expenses using a limit on the number of rows.
     fn get_all(&self, limit: u32) -> Result<Vec<Expense>, E>;

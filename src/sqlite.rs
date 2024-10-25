@@ -1,3 +1,5 @@
+use std::borrow::Borrow;
+
 use rusqlite::{Connection, Error, OpenFlags};
 use uuid::Uuid;
 
@@ -51,7 +53,12 @@ impl SqliteRepository {
     /// Open a database at `db_path`. The database must exist, otherwise it will return an error
     pub fn open(db_path: &str) -> Result<Self, Error> {
         Ok(SqliteRepository {
-            db: Connection::open_with_flags(db_path, OpenFlags::SQLITE_OPEN_READ_WRITE)?,
+            db: Connection::open_with_flags(
+                db_path,
+                OpenFlags::SQLITE_OPEN_READ_WRITE
+                    | OpenFlags::SQLITE_OPEN_URI
+                    | OpenFlags::SQLITE_OPEN_NO_MUTEX,
+            )?,
         })
     }
 
@@ -68,6 +75,10 @@ impl SqliteRepository {
         db.execute(CREATE_TABLE_EXPENSES, [])?;
 
         Ok(SqliteRepository { db })
+    }
+
+    pub fn close(self) -> Result<(), (Connection, Error)> {
+        self.db.close()
     }
 }
 
@@ -91,8 +102,8 @@ impl ExpensesRepository<Error> for SqliteRepository {
         )
     }
 
-    fn delete(&self, uuid: Uuid) -> Result<usize, Error> {
-        self.db.execute(DELETE_EXPENSE, [uuid.to_string()])
+    fn delete(&self, uuid: &str) -> Result<usize, Error> {
+        self.db.execute(DELETE_EXPENSE, [uuid])
     }
 
     fn get_all(&self, limit: u32) -> Result<Vec<Expense>, Error> {

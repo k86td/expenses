@@ -14,6 +14,9 @@
     devShells.x86_64-linux.default = pkgs.mkShell {
         buildInputs = with pkgs; [
           sqlite
+          rustfilt
+          llvm_17
+          just
         ];
     };
 
