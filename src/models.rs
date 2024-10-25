@@ -1,6 +1,7 @@
 use chrono::{DateTime, Utc};
 use serde_json::Value;
 use tabled::Tabled;
+use termsize::Size;
 
 use crate::repository::ExpensesRepository;
 
@@ -17,4 +18,5 @@ where
     R: ExpensesRepository,
 {
     pub repo: &'a R,
+    pub termsize: Size,
 }

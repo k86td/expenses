@@ -5,7 +5,10 @@ fn main() -> Result<()> {
     let cli = Cli::parse();
 
     let repo = SqliteRepository::open("testing.db").unwrap();
-    let ctx = CliContext { repo: &repo };
+    let ctx = CliContext {
+        repo: &repo,
+        termsize: termsize::get().unwrap(),
+    };
 
     cli.run(ctx)?;
 

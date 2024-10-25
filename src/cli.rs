@@ -1,6 +1,6 @@
 use clap::{Args, Parser, Subcommand};
 use serde_json::json;
-use tabled::Table;
+use tabled::{settings::Width, Table};
 
 use crate::{models::CliContext, repository::ExpensesRepository, Error};
 
@@ -14,8 +14,8 @@ pub struct Cli {
 pub enum Commands {
     /// Add a new expense
     Add(AddExpense),
-    // Show a table of all expenses
-    Show(ShowExpenseTable),
+    // Show a raw table of all expenses
+    Raw(ShowExpenseTable),
 }
 
 impl Cli {
@@ -28,7 +28,7 @@ impl Cli {
                 v.process(ctx)?;
                 Ok(())
             }
-            Commands::Show(s) => {
+            Commands::Raw(s) => {
                 s.process(ctx)?;
                 Ok(())
             }
@@ -77,7 +77,9 @@ impl ProcessCommand for ShowExpenseTable {
     {
         let expenses = ctx.repo.get_all(10)?;
 
-        let table = Table::new(expenses);
+        let table = Table::new(expenses)
+            .with(Width::truncate(ctx.termsize.cols as usize))
+            .to_string();
         println!("{table}");
 
         Ok(())
