@@ -80,7 +80,9 @@ impl SqliteRepository {
     }
 }
 
-impl ExpensesRepository<Error> for SqliteRepository {
+impl ExpensesRepository for SqliteRepository {
+    type E = rusqlite::Error;
+
     fn create(&self, expense: Expense) -> Result<usize, Error> {
         self.db.execute(
             CREATE_EXPENSE,
