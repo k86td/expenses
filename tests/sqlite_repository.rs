@@ -1,9 +1,8 @@
 use expenses::{models::Expense, repository::ExpensesRepository, sqlite::SqliteRepository};
-use rusqlite::Error;
 use serde_json::json;
 
 #[test]
-fn initialize_db_then_crud_operation() -> Result<(), Error> {
+fn initialize_db_then_crud_operation() -> expenses::Result<()> {
     let repo = SqliteRepository::initialize(":memory:")?;
 
     let now = chrono::Utc::now();

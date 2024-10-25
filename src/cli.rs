@@ -1,7 +1,7 @@
 use clap::{Args, Parser, Subcommand};
 use serde_json::json;
 
-use crate::{models::CliContext, repository::ExpensesRepository};
+use crate::{models::CliContext, repository::ExpensesRepository, Error};
 
 #[derive(Parser, Debug)]
 pub struct Cli {
@@ -31,14 +31,14 @@ pub struct AddExpense {
 
 pub trait ProcessCommand {
     /// Process the command
-    fn process<R>(&self, ctx: CliContext<R>) -> Result<(), R::E>
+    fn process<R>(&self, ctx: CliContext<R>) -> Result<(), Error>
     where
         R: ExpensesRepository;
 }
 
 /// This adds a new expense using the ExpensesRepository
 impl ProcessCommand for AddExpense {
-    fn process<R>(&self, ctx: CliContext<R>) -> Result<(), R::E>
+    fn process<R>(&self, ctx: CliContext<R>) -> Result<(), Error>
     where
         R: ExpensesRepository,
     {

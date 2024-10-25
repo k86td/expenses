@@ -1,6 +1,6 @@
-use rusqlite::{Connection, Error, OpenFlags};
+use rusqlite::{Connection, OpenFlags};
 
-use crate::{models::Expense, repository::ExpensesRepository};
+use crate::{models::Expense, repository::ExpensesRepository, Result};
 
 const CREATE_TABLE_EXPENSES: &str = "
 CREATE TABLE IF NOT EXISTS expenses (
@@ -48,7 +48,7 @@ pub struct SqliteRepository {
 
 impl SqliteRepository {
     /// Open a database at `db_path`. The database must exist, otherwise it will return an error
-    pub fn open(db_path: &str) -> Result<Self, Error> {
+    pub fn open(db_path: &str) -> Result<Self> {
         Ok(SqliteRepository {
             db: Connection::open_with_flags(
                 db_path,
@@ -61,7 +61,7 @@ impl SqliteRepository {
 
     /// Initialize the database at `db_path`. If it encounters an error during the creation an
     /// error will be returned.
-    pub fn initialize(db_path: &str) -> Result<Self, Error> {
+    pub fn initialize(db_path: &str) -> Result<Self> {
         let db = Connection::open_with_flags(
             db_path,
             OpenFlags::SQLITE_OPEN_CREATE
@@ -75,16 +75,15 @@ impl SqliteRepository {
     }
 
     /// Closes the database.
-    pub fn close(self) -> Result<(), (Connection, Error)> {
+    // FIX: should this also be using expenses::Result instead of core::result::Result ?
+    pub fn close(self) -> core::result::Result<(), (Connection, rusqlite::Error)> {
         self.db.close()
     }
 }
 
 impl ExpensesRepository for SqliteRepository {
-    type E = rusqlite::Error;
-
-    fn create(&self, expense: Expense) -> Result<usize, Error> {
-        self.db.execute(
+    fn create(&self, expense: Expense) -> Result<usize> {
+        let changed_rows = self.db.execute(
             CREATE_EXPENSE,
             (
                 expense.uuid,
@@ -92,21 +91,27 @@ impl ExpensesRepository for SqliteRepository {
                 expense.modified,
                 expense.data,
             ),
-        )
+        )?;
+
+        Ok(changed_rows)
     }
 
-    fn update(&self, expense: Expense) -> Result<usize, Error> {
-        self.db.execute(
+    fn update(&self, expense: Expense) -> Result<usize> {
+        let changed_rows = self.db.execute(
             UPDATE_EXPENSE,
             (expense.modified, expense.data, expense.uuid.to_string()),
-        )
+        )?;
+
+        Ok(changed_rows)
     }
 
-    fn delete(&self, uuid: &str) -> Result<usize, Error> {
-        self.db.execute(DELETE_EXPENSE, [uuid])
+    fn delete(&self, uuid: &str) -> Result<usize> {
+        let changed_rows = self.db.execute(DELETE_EXPENSE, [uuid])?;
+
+        Ok(changed_rows)
     }
 
-    fn get_all(&self, limit: u32) -> Result<Vec<Expense>, Error> {
+    fn get_all(&self, limit: u32) -> Result<Vec<Expense>> {
         let mut stmt = self.db.prepare(GET_ALL_EXPENSES)?;
         let expense_iter = stmt.query_map([limit], |row| {
             Ok(Expense {
