@@ -1,7 +1,4 @@
-use std::borrow::Borrow;
-
 use rusqlite::{Connection, Error, OpenFlags};
-use uuid::Uuid;
 
 use crate::{models::Expense, repository::ExpensesRepository};
 
@@ -77,6 +74,7 @@ impl SqliteRepository {
         Ok(SqliteRepository { db })
     }
 
+    /// Closes the database.
     pub fn close(self) -> Result<(), (Connection, Error)> {
         self.db.close()
     }
