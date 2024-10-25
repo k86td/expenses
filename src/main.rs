@@ -1,28 +1,23 @@
-use chrono::TimeZone;
-use expenses::{repository::ExpensesRepository, sqlite::SqliteRepository};
-use serde_json::json;
-use uuid::Uuid;
+use std::{error::Error, sync::Arc};
 
-fn main() {
-    let repo = SqliteRepository::initialize(":memory:").unwrap();
-    let uuid: String = Uuid::new_v4().to_string();
-    let now = chrono::Utc::now();
+use clap::Parser;
+use expenses::{
+    cli::{self, AddExpense, Cli, Commands, ProcessCommand},
+    models::CliContext,
+    repository::ExpensesRepository,
+    sqlite::SqliteRepository,
+};
 
-    repo.create(expenses::models::Expense {
-        uuid: uuid.clone(),
-        created: now,
-        modified: now,
-        data: json!({}),
-    })
-    .unwrap();
+fn main() -> Result<(), impl Error> {
+    let cli = Cli::parse();
+    let command = cli.match_command();
 
-    repo.update(expenses::models::Expense {
-        uuid,
-        created: chrono::Utc::now(),
-        modified: chrono::Utc::now(),
-        data: json!({"newField": true}),
-    })
-    .unwrap();
+    let repo = SqliteRepository::initialize(":memory:")?;
+    let ctx = CliContext { repo: &repo };
 
-    dbg!(repo.get_all(1).unwrap());
+    command.process(ctx)?;
+
+    dbg!(repo.get_all(5)?);
+
+    Ok::<(), rusqlite::Error>(())
 }
