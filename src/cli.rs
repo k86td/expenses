@@ -2,7 +2,7 @@ use clap::{Args, Parser, Subcommand};
 use serde_json::json;
 use tabled::{settings::Width, Table};
 
-use crate::{models::CliContext, repository::ExpensesRepository, Error};
+use crate::{error::AppError, models::CliContext, repository::ExpensesRepository, Error};
 
 #[derive(Parser, Debug)]
 pub struct Cli {
@@ -14,8 +14,11 @@ pub struct Cli {
 pub enum Commands {
     /// Add a new expense
     Add(AddExpense),
-    // Show a raw table of all expenses
+    /// Show a raw table of all expenses
     Raw(ShowExpenseTable),
+    /// Delete an expense using its UUID. Minimum length for the UUID
+    /// is 8 characters
+    Delete(DeleteExpense),
 }
 
 impl Cli {
@@ -30,6 +33,10 @@ impl Cli {
             }
             Commands::Raw(s) => {
                 s.process(ctx)?;
+                Ok(())
+            }
+            Commands::Delete(d) => {
+                d.process(ctx)?;
                 Ok(())
             }
         }
@@ -81,6 +88,29 @@ impl ProcessCommand for ShowExpenseTable {
             .with(Width::truncate(ctx.termsize.cols as usize))
             .to_string();
         println!("{table}");
+
+        Ok(())
+    }
+}
+
+#[derive(Args, Debug)]
+pub struct DeleteExpense {
+    uuid: String,
+}
+
+impl ProcessCommand for DeleteExpense {
+    fn process<R>(&self, ctx: CliContext<R>) -> Result<(), Error>
+    where
+        R: ExpensesRepository,
+    {
+        // ensure we use minimally a uuid of 8 len to avoid deleting other expenses
+        if self.uuid.len() < 8 {
+            // FIX: there is probably a better way to write this
+            println!("{}", AppError::InvalidParameter);
+            return Err(AppError::InvalidParameter)?;
+        }
+
+        ctx.repo.delete(&format!("{}%", self.uuid))?;
 
         Ok(())
     }

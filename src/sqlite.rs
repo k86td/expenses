@@ -30,7 +30,7 @@ WHERE
 const DELETE_EXPENSE: &str = "
 DELETE FROM expenses
 WHERE
-    uuid = ?;
+    uuid LIKE ?;
 ";
 
 const GET_ALL_EXPENSES: &str = "
