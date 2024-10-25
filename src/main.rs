@@ -1,11 +1,5 @@
 use clap::Parser;
-use expenses::{
-    cli::{Cli, ProcessCommand},
-    models::CliContext,
-    repository::ExpensesRepository,
-    sqlite::SqliteRepository,
-    Result,
-};
+use expenses::{cli::Cli, models::CliContext, sqlite::SqliteRepository, Result};
 
 fn main() -> Result<()> {
     let cli = Cli::parse();
