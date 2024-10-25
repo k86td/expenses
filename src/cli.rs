@@ -1,7 +1,7 @@
 use clap::{Args, Parser, Subcommand};
 use serde_json::json;
 
-use crate::{models::CliContext, repository::ExpensesRepository, sqlite::SqliteRepository};
+use crate::{models::CliContext, repository::ExpensesRepository};
 
 #[derive(Parser, Debug)]
 pub struct Cli {

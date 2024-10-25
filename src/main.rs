@@ -1,8 +1,8 @@
-use std::{error::Error, sync::Arc};
+use std::error::Error;
 
 use clap::Parser;
 use expenses::{
-    cli::{self, AddExpense, Cli, Commands, ProcessCommand},
+    cli::{Cli, ProcessCommand},
     models::CliContext,
     repository::ExpensesRepository,
     sqlite::SqliteRepository,
