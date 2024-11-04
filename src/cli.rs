@@ -2,7 +2,10 @@ use clap::{Args, Parser, Subcommand};
 use serde_json::json;
 use tabled::{settings::Width, Table};
 
-use crate::{error::AppError, models::CliContext, repository::ExpensesRepository, Error};
+use crate::{
+    commands::show_table::ShowTableExpense, error::AppError, models::CliContext,
+    repository::ExpensesRepository, Error,
+};
 
 #[derive(Parser, Debug)]
 pub struct Cli {
@@ -15,7 +18,9 @@ pub enum Commands {
     /// Add a new expense
     Add(AddExpense),
     /// Show a raw table of all expenses
-    Raw(ShowExpenseTable),
+    Raw(ShowRawExpenseTable),
+    /// Show a table of expenses
+    Show(ShowTableExpense),
     /// Delete an expense using its UUID. Minimum length for the UUID
     /// is 8 characters
     Delete(DeleteExpense),
@@ -26,6 +31,8 @@ impl Cli {
     where
         R: ExpensesRepository,
     {
+        // TODO: make an interface to be able to run only self.command.process(ctx) instead
+        // of having of matching all commands
         match self.command {
             Commands::Add(v) => {
                 v.process(ctx)?;
@@ -37,6 +44,10 @@ impl Cli {
             }
             Commands::Delete(d) => {
                 d.process(ctx)?;
+                Ok(())
+            }
+            Commands::Show(s) => {
+                s.process(ctx)?;
                 Ok(())
             }
         }
@@ -75,9 +86,9 @@ impl ProcessCommand for AddExpense {
 }
 
 #[derive(Args, Debug)]
-pub struct ShowExpenseTable {}
+pub struct ShowRawExpenseTable {}
 
-impl ProcessCommand for ShowExpenseTable {
+impl ProcessCommand for ShowRawExpenseTable {
     fn process<R>(&self, ctx: CliContext<R>) -> Result<(), Error>
     where
         R: ExpensesRepository,
