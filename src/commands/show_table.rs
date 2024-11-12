@@ -1,4 +1,4 @@
-use std::ops::RangeBounds;
+use std::{fmt::Debug, ops::RangeBounds};
 
 use clap::Args;
 use tabled::{
@@ -11,13 +11,19 @@ use tabled::{
     Table,
 };
 
-use crate::{cli::ProcessCommand, models::Expense, styling::AsciiStyling};
+use crate::{
+    cli::ProcessCommand,
+    models::Expense,
+    styling::{new_table, AsciiStyling},
+};
 
-// type ExpenseFilter = Option<Box<dyn Fn(&Expense) -> bool>>;
+#[derive(Args)]
+pub struct ShowTableExpense;
 
-#[derive(Debug, Args)]
-pub struct ShowTableExpense {
-    // filter: ExpenseFilter,
+impl Debug for ShowTableExpense {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str("ShowTableExpense")
+    }
 }
 
 impl ProcessCommand for ShowTableExpense {
@@ -25,26 +31,9 @@ impl ProcessCommand for ShowTableExpense {
     where
         R: crate::repository::ExpensesRepository,
     {
-        let mut expenses = ctx.repo.get_all(25)?;
+        let expenses = ctx.repo.get_all(25)?;
 
-        // if let Some(filter) = &self.filter {
-        //     expenses = expenses.into_iter().filter(filter).collect();
-        // }
-
-        let underline_style = Color::new(AsciiStyling::Underline, AsciiStyling::Reset);
-        let mut display_table = Table::new(expenses);
-        display_table
-            .with(Style::blank())
-            .with(Colorization::rows([Color::BG_BLACK, Color::BG_WHITE]))
-            .with(Colorization::exact([underline_style], Rows::first()));
-
-        for row in (2..display_table.count_rows()).step_by(2) {
-            display_table.modify(Rows::single(row), BorderColor::new().left(Color::BG_BLACK));
-        }
-
-        for row in (1..display_table.count_rows()).step_by(2) {
-            display_table.modify(Rows::single(row), BorderColor::new().left(Color::BG_WHITE));
-        }
+        let display_table = new_table(expenses);
 
         println!("{}", display_table);
 
