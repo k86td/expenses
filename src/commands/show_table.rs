@@ -1,21 +1,8 @@
-use std::{fmt::Debug, ops::RangeBounds};
+use std::fmt::Debug;
 
 use clap::Args;
-use tabled::{
-    settings::{
-        object::{Column, Columns, Object, Rows},
-        style::BorderColor,
-        themes::Colorization,
-        Border, Color, Style, Theme,
-    },
-    Table,
-};
 
-use crate::{
-    cli::ProcessCommand,
-    models::Expense,
-    styling::{new_table, AsciiStyling},
-};
+use crate::{cli::ProcessCommand, styling::new_table};
 
 #[derive(Args)]
 pub struct ShowTableExpense;
