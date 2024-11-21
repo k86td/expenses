@@ -3,14 +3,22 @@ I'm starting to see an issue with the usage of this project. I want to be able t
 
 This could be used with a server that does the actual syncing of the expenses. Exports could be done from the server. Lua script would still be available for varying the export procedure.
 
+The requirements for choosing a mobile framework:
+
+- can take pictures (directly or by using camera app then returning image file)
+- can send http requests (to sync with backend server)
+
 # Languages
 
 Here are the groups of language that I would want to use. Ordered from more attracted to least.
 
 ## Rust
 
-- [tauri](https://v2.tauri.app/)
-- [wry](https://github.com/tauri-apps/wry)
+### [tauri](https://v2.tauri.app/)
+
+Check [create-project](https://v2.tauri.app/start/create-project/) and [develop](https://v2.tauri.app/develop/). These documentation seem to provide enough instruction to build & run the desktop/mobile apps. The folder `xp/` in this repo contains experiments for the different libraries.
+
+### [wry](https://github.com/tauri-apps/wry)
 
 ## Javascript
 
