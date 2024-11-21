@@ -10,6 +10,7 @@ Here are the groups of language that I would want to use. Ordered from more attr
 ## Rust
 
 - [tauri](https://v2.tauri.app/)
+- [wry](https://github.com/tauri-apps/wry)
 
 ## Javascript
 
