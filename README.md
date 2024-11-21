@@ -1,4 +1,56 @@
 
+I'm starting to see an issue with the usage of this project. I want to be able to make the expenses on the go, taking picture of the receipts as I go about my day. Having a cli app would stop me from achieving this. Ideally this would need to be a cross-platform mobile app of some sort. I've already used expo for mobile development, I'll check for alternatives. I wanted to do a Rust project, but the ecosystem doesn't seem mature enough yet. I'll still consider rust and do an xp to try to use the features I want. So let's enter brainstorming again and try to find libraries grouped by languages that could be used. I'm not *super* familiar with mobile development as I haven't done a lot and it didn't inspire me that much.
+
+This could be used with a server that does the actual syncing of the expenses. Exports could be done from the server. Lua script would still be available for varying the export procedure.
+
+# Languages
+
+Here are the groups of language that I would want to use. Ordered from more attracted to least.
+
+## Rust
+
+- [tauri](https://v2.tauri.app/)
+
+## Javascript
+
+### [Expo](https://expo.dev/)
+
+This seems like the best option. Already offers incredible support out of the box. If I want to use Rust I could create a lib that would be linked in the final package. This could be then called by the react-native runtime. But I don't think it'll even be necessary. If the mobile app just creates some expenses and syncs them with a server, the server will be in charge of the export. The server could be extremely lightweight and for simplicity, single user.
+
+## Golang
+
+- [gomobile](https://go.dev/wiki/Mobile)
+
+# General Design
+
+The mobile application will syncs expenses to the server. For accurate synchronization, we could use [Lamport timestamp](https://en.wikipedia.org/wiki/Lamport_timestamp) to order the events correctly. I don't think this is useful in our case, since we could have a column defining if the data was actually synced to the server. We could periodically re-check all the rows we have saved to ensure they're found in the server. After a certain period of time, synced rows could be removed from the mobile app since they can be found in the server.
+
+In the case the server is not available, the mobile app should still be useable. Information should be displayed that the server is currently inaccessible so certain features are limited.
+
+The server will act for a single user. A key could be generated for the two to communicate securely. The server will be in charge of exporting the data. So any exporting methods will need to be configured in the server. The server should be in order to provide the data back to the client, using paging to avoid sending excessive payloads.
+
+# Data modeling
+
+The main data structure to be used should be an ExpenseReport. This can include multiple expenses with different receipts. This is useful to track taxes for various different things.
+
+Expenses {
+  uuid: String,
+  created: Datetime,
+  modifier: Datetime,
+  value: f32,
+  additional_data: Json
+}
+
+ExpenseReport {
+  expenses: List<Expenses>
+}
+
+---
+
+# Archive
+
+Everything underneath is outdated and will eventually be removed.
+
 # General
 
 This repository is to help keeping track of
