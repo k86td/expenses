@@ -3,8 +3,11 @@ use serde_json::json;
 use tabled::{settings::Width, Table};
 
 use crate::{
-    commands::show_table::ShowTableExpense, error::AppError, models::CliContext,
-    repository::ExpensesRepository, Error,
+    commands::{export::InlineExportExpenses, show_table::ShowTableExpense},
+    error::AppError,
+    models::CliContext,
+    repository::ExpensesRepository,
+    Error,
 };
 
 #[derive(Parser, Debug)]
@@ -24,6 +27,8 @@ pub enum Commands {
     /// Delete an expense using its UUID. Minimum length for the UUID
     /// is 8 characters
     Delete(DeleteExpense),
+    /// Export expenses using a lua script
+    Export(InlineExportExpenses),
 }
 
 impl Cli {
@@ -48,6 +53,10 @@ impl Cli {
             }
             Commands::Show(s) => {
                 s.process(ctx)?;
+                Ok(())
+            }
+            Commands::Export(e) => {
+                e.process(ctx)?;
                 Ok(())
             }
         }

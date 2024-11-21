@@ -9,6 +9,7 @@ edition = "2021"
 chrono = "0.4.38"
 clap = { version = "4.5.20", features = ["derive"] }
 colored = "2.1.0"
+mlua = { version = "0.10.1", features = ["luau"] }
 rusqlite = { version = "0.32.1", features = ["bundled", "chrono", "serde_json"] }
 serde_json = "1.0.132"
 tabled = "0.16.0"
