@@ -7,7 +7,16 @@
 
   outputs = { self, nixpkgs }:
   let
-    pkgs = nixpkgs.legacyPackages.x86_64-linux;
+    # pkgs = nixpkgs.legacyPackages.x86_64-linux;
+    pkgs = import nixpkgs {
+      system = "x86_64-linux";
+      config = {
+        android_sdk.accept_license = true; 
+        allowUnfree = true;
+      };
+    };
+
+    androidComposition = pkgs.androidenv.composeAndroidPackages { };
   in
   {
 
@@ -17,6 +26,10 @@
           rustfilt
           llvm_17
           just
+
+          nodejs_22
+
+          androidComposition.androidsdk
         ];
     };
 
